@@ -1,0 +1,111 @@
+body {
+    background: #e8ecf3;
+    font-family: "Optima", "Georgia", serif;
+}
+
+.page {
+    margin: auto;
+    width: 1400px;
+    display: grid;
+    grid-template-columns: 200px 1000px 200px;
+    grid-template-rows: 100px 800px;
+}
+
+.header {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    position: relative;
+}
+
+.namebox {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    border: 1px black solid;
+    padding: 10px;
+}
+
+.board {
+    width: 232px;
+    height: 232px;
+    border: 5px blue solid;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    border: 1px black solid;
+    float: left;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.boardgrid {
+    display: grid;
+    grid-template-columns: 100px 100px 100px 100px;
+    grid-template-rows: 100px 100px 100px 100px;
+    gap: 5px;
+    width: 415px;
+    margin: auto;
+}
+
+.cellgrid {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    background: #e8ecf3;
+    box-shadow:
+        6px 6px 12px #c5c9d0,
+        -6px -6px 12px #ffffff;
+    cursor: pointer;
+}
+
+.selected {
+    box-shadow:
+        0 0 0 4px red,
+        6px 6px 12px #c5c9d0,
+        -6px -6px 12px #ffffff;
+}
+
+.menu {
+    margin: auto;
+    width: 1000px;
+}
+
+.menubutton {
+    margin: 20px auto;
+    width: 700px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border-radius: 15px;
+    background: #e8ecf3;
+    box-shadow: 8px 8px 16px #c5c9d0,
+        -8px -8px 16px #ffffff;
+    cursor: pointer;
+}
+
+.gamecontainer {
+    width: 415px;
+    margin: 100px auto;
+}
+
+.backbutton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    margin-bottom: 30px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    background: #e8ecf3;
+    color: #333;
+    cursor: pointer;
+    box-shadow:
+        6px 6px 12px #c5c9d1,
+        -6px -6px 12px #ffffff;
+    transition: all 0.2s ease;
+}

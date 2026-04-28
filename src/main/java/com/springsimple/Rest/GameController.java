@@ -92,28 +92,26 @@ public class GameController {
     }
 
     @PostMapping("/api/game/{gameid}/move")
-	public ResponseEntity<Response<GameResponse>> makeMove(@PathVariable int gameid, @RequestBody MoveRequest move) {
-      
-        Game game = this.gameModel.GetGameById(gameid);
+    public ResponseEntity<Response<GameResponse>> makeMove(@PathVariable int gameid, @RequestBody MoveRequest move) {
 
+        Game game = this.gameModel.GetGameById(gameid);
 
         List<String> errors = this.messages.GetErrors();
         if (!errors.isEmpty()) {
             Response<GameResponse> response = new Response<GameResponse>(false, errors, null);
             return ResponseEntity.status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(response);
-
-        }
-      
-      
-        game = this.gameModel.MakeMove(gameid, move.getColumn(), move.getRow());
-
-
-        Response<GameResponse> response = new Response<GameResponse>(true, null, GameResponseMapper.mapFromGameModel(game));
-        return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
+
+        }
+
+        game = this.gameModel.MakeMove(gameid, move.getColumn(), move.getRow());
+
+        Response<GameResponse> response = new Response<GameResponse>(true, null,
+                GameResponseMapper.mapFromGameModel(game));
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @PostMapping("/api/game")
@@ -121,54 +119,80 @@ public class GameController {
         Game game = this.gameModel.CreateGame(newGame.getPlayerid());
 
         List<String> errors = this.messages.GetErrors();
-        // !errors.isEmpty Dr. Florin explained in class. 
+        // !errors.isEmpty Dr. Florin explained in class.
         if (!errors.isEmpty()) {
             Response<GameResponse> response = new Response<GameResponse>(false, errors, null);
             return ResponseEntity.status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(response);
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
 
         }
 
-        Response<GameResponse> response = new Response<GameResponse>(true, null, GameResponseMapper.mapFromGameModel(game));
+        Response<GameResponse> response = new Response<GameResponse>(true, null,
+                GameResponseMapper.mapFromGameModel(game));
         return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @GetMapping("/api/player/{playerId}/games/active")
+    public ResponseEntity<Response<List<GameResponse>>> getActiveGamesForPlayer(@PathVariable int playerId) {
+        List<Game> games = this.gameModel.GetGamesByPlayerId(playerId);
+
+        List<Game> activeGames = new ArrayList<>();
+        for (Game game : games) {
+            if (game.getStatus().equals("Active")) {
+                activeGames.add(game);
+            }
+        }
+
+        if (activeGames.isEmpty()) {
+            List<String> errors = new ArrayList<String>();
+            errors.add("No active games found for player with id: " + playerId);
+            Response<List<GameResponse>> response = new Response<List<GameResponse>>(false, errors, null);
+            return ResponseEntity.status(HttpStatus.OK)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(response);
+        }
+
+        Response<List<GameResponse>> response = new Response<List<GameResponse>>(true, null,
+                GameResponseMapper.mapFromGameModel(activeGames));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+
     }
-    
-    
-    
-    
-    
-    
-    // Why did Dr. Florin comment this out? 
-	// @PostMapping("/api/game")
-	// public ResponseEntity<GameResponse> createNewGame(@RequestBody GameRequest newGame) {
-        
-        
-    //     Game game = GameModel.CreateGame(GameRequestMapper.mapToGameModel(newGame));
 
+    // Why did Dr. Florin comment this out?
+    // @PostMapping("/api/game")
+    // public ResponseEntity<GameResponse> createNewGame(@RequestBody GameRequest
+    // newGame) {
 
-    //     return ResponseEntity.status(HttpStatus.OK)
-    //                     .contentType(MediaType.APPLICATION_JSON)
-    //                     .body(GameResponseMapper.mapFromGameModel(game));
-    // }
-   
-	// @PostMapping("/api/game/{id}")
-	// public ResponseEntity<GameResponse> updateGame(@PathVariable int id, @RequestBody GameRequest newGame) {
-    //     Game game = GameModel.UpdateGame(id, GameRequestMapper.mapToGameModel(newGame));
-    //     return ResponseEntity.status(HttpStatus.OK)
-    //                     .contentType(MediaType.APPLICATION_JSON)
-    //                     .body(GameResponseMapper.mapFromGameModel(game));
+    // Game game = GameModel.CreateGame(GameRequestMapper.mapToGameModel(newGame));
+
+    // return ResponseEntity.status(HttpStatus.OK)
+    // .contentType(MediaType.APPLICATION_JSON)
+    // .body(GameResponseMapper.mapFromGameModel(game));
     // }
 
-  	// @DeleteMapping("/api/game/{id}")
-	// public ResponseEntity<GameResponse> deleteGame(@PathVariable int id) {
-        
-    //     Game game = GameModel.DeleteGame(id);
-    //     return ResponseEntity.status(HttpStatus.OK)
-    //                     .contentType(MediaType.APPLICATION_JSON)
-    //                     .body(GameResponseMapper.mapFromGameModel(game));
+    // @PostMapping("/api/game/{id}")
+    // public ResponseEntity<GameResponse> updateGame(@PathVariable int id,
+    // @RequestBody GameRequest newGame) {
+    // Game game = GameModel.UpdateGame(id,
+    // GameRequestMapper.mapToGameModel(newGame));
+    // return ResponseEntity.status(HttpStatus.OK)
+    // .contentType(MediaType.APPLICATION_JSON)
+    // .body(GameResponseMapper.mapFromGameModel(game));
+    // }
+
+    // @DeleteMapping("/api/game/{id}")
+    // public ResponseEntity<GameResponse> deleteGame(@PathVariable int id) {
+
+    // Game game = GameModel.DeleteGame(id);
+    // return ResponseEntity.status(HttpStatus.OK)
+    // .contentType(MediaType.APPLICATION_JSON)
+    // .body(GameResponseMapper.mapFromGameModel(game));
     // }
 
 }

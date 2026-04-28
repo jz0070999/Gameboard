@@ -55,6 +55,9 @@ function updateBoard(data) {
 
 function ShowGame(gameid) {
 
+    // make sure "Create New Game" and "Show Active Games" always use the correct game id 
+    currentGameId = gameid;
+
     CreateBoard();
 
     let url = `http://localhost:8080/api/game/${gameid}`;
@@ -95,7 +98,7 @@ function ShowMenu() {
     body.innerHTML = `
          <div class ="menu">
              <div class="menubutton" onclick="CreateNewGame()">Create New Game</div>
-             <div class="menubutton">Generic Option 2</div>
+             <div class="menubutton" onclick="ShowActiveGames()">Show Active Games</div>
              <div class="menubutton">Generic Option 3</div>
          </div>
     `; // use back ticks in JavaScript liked Florin talked about, it allows you to write multi-line strings and embed expressions easily.
@@ -116,6 +119,38 @@ function CreateNewGame() {
             currentGameId = data.data.id; // save id here
             // go to the new game 
             ShowGame(currentGameId);
+        });
+}
+
+function ShowActiveGames() {
+    console.log("show active games clicked");
+    let playerId = 1; // hardcoded for now, will need to be dynamic later
+    let url = `http://localhost:8080/api/player/${playerId}/games/active`;
+    let body = document.querySelector(".body");
+
+    fetch(url)
+        .then(response => { return response.json() })
+        .then(games => {
+            console.log(games);
+            // display active games
+            body.innerHTML = ""; // clear the body content
+            let backButton = `<div class="backbutton" onclick="ShowMenu()">\u2190 Back </div>`;
+            body.innerHTML = backButton; // add back button
+            body.appendChild(document.createElement("h2")).innerText = "Active Games";
+            for (let i = 0; i < games.data.length; i++) {
+                let game = games.data[i];
+
+                let gameButton = document.createElement("div");
+                gameButton.classList.add("gamebutton");
+                gameButton.innerText = `Load Game ${game.id}`;
+
+                gameButton.onclick = function () {
+                    currentGameId = game.id;
+                    ShowGame(currentGameId);
+                };
+
+                body.appendChild(gameButton);
+            }
         });
 }
 

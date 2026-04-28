@@ -25,6 +25,8 @@ import com.springsimple.Rest.Response.GameResponseMapper;
 import com.springsimple.Rest.Response.PlayerResponse;
 import com.springsimple.Rest.Response.Response;
 
+import jakarta.servlet.http.HttpSession;
+
 @RestController
 public class GameController {
 
@@ -91,8 +93,10 @@ public class GameController {
                 .body(response);
     }
 
+    // chnage the method signature to inclufe HttpSession
+    // why do I add it to this @PostMapping method and not the others? Because this is the only method that needs to check if the player is logged in. 
     @PostMapping("/api/game/{gameid}/move")
-    public ResponseEntity<Response<GameResponse>> makeMove(@PathVariable int gameid, @RequestBody MoveRequest move) {
+    public ResponseEntity<Response<GameResponse>> makeMove(@PathVariable int gameid, @RequestBody MoveRequest move, HttpSession session) {
 
         Game game = this.gameModel.GetGameById(gameid);
 
@@ -194,5 +198,17 @@ public class GameController {
     // .contentType(MediaType.APPLICATION_JSON)
     // .body(GameResponseMapper.mapFromGameModel(game));
     // }
+
+    // step 1, add the endpoint, this part is for blocking access control part 
+    @PostMapping("/api/login/player/{playerid}")
+    public ResponseEntity<Response<String>> loginPlayer(@PathVariable int playerid, HttpSession session){
+        
+        session.setAttribute("playerid", playerid);
+        Response<String> response = new Response<String>(true, null, "player logged in");  
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
 
 }

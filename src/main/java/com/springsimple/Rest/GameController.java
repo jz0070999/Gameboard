@@ -92,7 +92,7 @@ public class GameController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
-
+    
     // chnage the method signature to inclufe HttpSession
     // why do I add it to this @PostMapping method and not the others? Because this is the only method that needs to check if the player is logged in. 
     @PostMapping("/api/game/{gameid}/move")

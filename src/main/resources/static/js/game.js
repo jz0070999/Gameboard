@@ -154,5 +154,10 @@ function ShowActiveGames() {
         });
 }
 
-// ShowGame(1);
+
+fetch("http://localhost:8080/api/login/player/1", {
+    method: "POST"
+}); 
+
+// then show the menu ShowGame(1);
 ShowMenu(); 

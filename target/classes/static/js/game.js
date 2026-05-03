@@ -3,9 +3,37 @@
 
 // For sprint 1 make sure it is passing the correct game id to the backend service. 
 let currentGameId = null;
+let currentGameStatus = null;
 
+function showMessage(message) {
+    let banner = document.querySelector("#messageBanner");
+    if (banner == null) {
+        return;
+    }
+
+    banner.innerText = message;
+    banner.style.display = "block";
+}
+
+function clearMessage() {
+    let banner = document.querySelector("#messageBanner");
+    if (banner == null) {
+        return;
+    }
+
+    banner.innerText = "";
+    banner.style.display = "none";
+}
 
 function makemove(col, row) {
+    if (currentGameStatus != "Active") {
+        if (currentGameStatus != null) {
+            showMessage("The game is not active");
+        }
+        return;
+    }
+
+    clearMessage();
 
     let options = {
         method: 'POST',
@@ -16,7 +44,17 @@ function makemove(col, row) {
     fetch(`http://localhost:8080/api/game/${currentGameId}/move`, options)
         .then(response => { return response.json() })
         .then(data => {
+            if (data.isSuccess != true) {
+                showMessage(data.message.join(" "));
+                console.log(data);
+                return;
+            }
+
             updateBoard(data);
+            currentGameStatus = data.data.status;
+            if (currentGameStatus == "Complete") {
+                showMessage("You won the game!");
+            }
             console.log(data);
         });
 }
@@ -29,6 +67,9 @@ function handleClick(col, row) {
 
 // update board UI
 function updateBoard(data) {
+    if (data == null || data.data == null) {
+        return;
+    }
 
     for (let x = 0; x <= 3; x++) {
         for (let y = 0; y <= 3; y++) {
@@ -57,6 +98,7 @@ function ShowGame(gameid) {
 
     // make sure "Create New Game" and "Show Active Games" always use the correct game id 
     currentGameId = gameid;
+    currentGameStatus = null;
 
     CreateBoard();
 
@@ -67,7 +109,13 @@ function ShowGame(gameid) {
         .then(game => {
             if (game.isSuccess == true) {
                 console.log(game.data.id);
+                currentGameStatus = game.data.status;
                 updateBoard(game);
+                if (currentGameStatus != "Active") {
+                    showMessage("The game is not active");
+                }
+            } else {
+                showMessage(game.message.join(" "));
             }
         });
 }
@@ -83,14 +131,16 @@ function CreateBoard() {
     }
 
     let backButton = `<div class="backbutton" onclick="ShowMenu()">\u2190 Back </div>`;
+    let messageBanner = `<div id="messageBanner" class="messagebanner"></div>`;
 
-    let boardUI = `<div class="gamecontainer">${backButton}<div class="boardgrid">${cellUI}</div></div>`;
+    let boardUI = `<div class="gamecontainer">${backButton}${messageBanner}<div class="boardgrid">${cellUI}</div></div>`;
     let body = document.querySelector(".body");
     body.innerHTML = boardUI;
 
 }
 
 function ShowMenu() {
+    currentGameStatus = null;
 
     let body = document.querySelector(".body");
     // use back ticks like Florin talked about 
@@ -137,6 +187,15 @@ function ShowActiveGames() {
             let backButton = `<div class="backbutton" onclick="ShowMenu()">\u2190 Back </div>`;
             body.innerHTML = backButton; // add back button
             body.appendChild(document.createElement("h2")).innerText = "Active Games";
+            if (games.isSuccess != true) {
+                let message = document.createElement("div");
+                message.classList.add("messagebanner");
+                message.style.display = "block";
+                message.innerText = games.message.join(" ");
+                body.appendChild(message);
+                return;
+            }
+
             for (let i = 0; i < games.data.length; i++) {
                 let game = games.data[i];
 

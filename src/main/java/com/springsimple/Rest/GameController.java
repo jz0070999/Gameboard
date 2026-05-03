@@ -111,6 +111,14 @@ public class GameController {
 
         game = this.gameModel.MakeMove(gameid, move.getColumn(), move.getRow());
 
+        errors = this.messages.GetErrors();
+        if (!errors.isEmpty()) {
+            Response<GameResponse> response = new Response<GameResponse>(false, errors, null);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        }
+
         Response<GameResponse> response = new Response<GameResponse>(true, null,
                 GameResponseMapper.mapFromGameModel(game));
         return ResponseEntity.status(HttpStatus.OK)

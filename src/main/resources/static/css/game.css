@@ -95,6 +95,24 @@ body {
     margin: 100px auto;
 }
 
+.messagebanner {
+    display: none;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 56px;
+    margin: 0 0 34px 0;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: #e8ecf3;
+    color: #333;
+    text-align: center;
+    font-size: 18px;
+    line-height: 24px;
+    box-shadow:
+        inset 4px 4px 8px #c5c9d1,
+        inset -4px -4px 8px #ffffff;
+}
+
 .backbutton {
     display: inline-flex;
     align-items: center;
